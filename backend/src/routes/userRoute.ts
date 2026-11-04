@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 import * as argon2 from "argon2";
 import { MongoServerError } from 'mongodb';
 import { usermiddleware } from "../middleware/usermiddleware.js";
+import { accountModal } from "../models/accounts.js";
+
 
 export const UserRouter=Router()
 
@@ -39,9 +41,11 @@ UserRouter.post('/signup',async(req,res)=>{
         const hashedPassword= await argon2.hash(password)
         console.log(hashedPassword);
         const newuser=await UserModel.create({username,password:hashedPassword,firstName,lastName})
+        const newaccount=await accountModal.create({User_id:newuser._id,balance:1+Math.random()*10000})
         res.status(201).json({
             "message":"user successfully added",
-            "data":newuser
+            "user":newuser,
+            "account":newaccount,
         })
     }
     catch(e){
