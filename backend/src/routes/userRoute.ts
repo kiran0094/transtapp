@@ -4,6 +4,7 @@ import { UserModel } from "../models/user.js"
 import jwt from "jsonwebtoken";
 import * as argon2 from "argon2";
 import { MongoServerError } from 'mongodb';
+import { usermiddleware } from "../middleware/usermiddleware.js";
 
 export const UserRouter=Router()
 
@@ -18,6 +19,12 @@ const signinschema = signupschema.omit({
   firstName: true,
   lastName: true,
 });
+const updateBody = z.object({
+	password: z.string().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+})
+
 
 UserRouter.post('/signup',async(req,res)=>{
     try{        
@@ -101,5 +108,40 @@ UserRouter.post('/signin',async(req,res)=>{
 
     }
 
+
+})
+
+UserRouter.patch('/',usermiddleware,async(req,res)=>{
+    const id =req.headers.userid;
+    const data=updateBody.safeParse(req.body);
+    if(!data.success){
+        return res.status(400).json({
+            message:"Invalid update fields",
+            errors:data.error
+        });
+    }
+    const existingUser=await UserModel.findOneAndUpdate({_id:id},data.data,{new:true});
+    return res.status(200).json({
+        message:"User updated successfully",
+        data:existingUser
+    });
+
+
+})
+UserRouter.get('/bulk',async(req,res)=>{
+    const search=req.body.search;
+    const data=await UserModel.find(
+        {
+            $or:[{
+                firstName:{
+                    "$regex":search,
+                }
+            },{
+                lastName:{
+                    "$regex":search,
+                }
+            }]
+        }
+    )
 
 })
