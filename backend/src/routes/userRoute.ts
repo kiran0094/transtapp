@@ -143,5 +143,13 @@ UserRouter.get('/bulk',async(req,res)=>{
             }]
         }
     )
+    res.send(200).json({
+        "message":"the data matched data",
+        user: data.map(user => ({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id}))
+    })
 
 })
