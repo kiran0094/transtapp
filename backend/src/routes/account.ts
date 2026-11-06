@@ -3,6 +3,7 @@ import { usermiddleware } from "../middleware/usermiddleware.js";
 import { accountModal } from "../models/accounts.js";
 import * as z from 'zod'
 import { UserModel } from "../models/user.js";
+import mongoose from "mongoose";
 
 export const AccoutRouter=Router();
 const transferShema=z.object({
@@ -35,37 +36,40 @@ AccoutRouter.post('/transfer',usermiddleware,async(req,res)=>{
             "message":"invaild data formate"
         })
         return;
-    }
+        }
+    const session= await mongoose.startSession();
+     session.startTransaction();
     const {to,amount}=transreq.data
-    const recevier=await UserModel.findOne({username:to});
-    if(!recevier){
-        res.status(400).json({
-            "message":"invaild recevier "
+    const senderacc=await accountModal.findOne({User_id:req.headers.userid}).session(session);
+    if(!senderacc?.balance || senderacc?.balance<amount){
+        await session.abortTransaction();
+        res.status(422).json({
+            "message":"inSuffect balance"
         })
         return;
     }
-    const recevieraccounts=await accountModal.findOne({User_id:recevier?._id});
-    if (recevieraccounts?.balance == null) {
-        res.status(404).json({
-            "message": "receiver account not found"
-        });
+     const receiveracc=await accountModal.findOne({User_id:to}).session(session);
+    if(!receiveracc){
+        await session.abortTransaction();
+        res.status(422).json({
+            "message":"TO account does not exist"
+        })
         return;
     }
-    const senderaccounts=await accountModal.findOne({User_id:req.headers.userId})
-    if (senderaccounts?.balance == null) {
-        res.status(404).json({
-            "message": "receiver account not found"
-        });
-        return;
-    }
-    const senderAmount=await accountModal.findOneAndUpdate({User_id:req.headers.userId},{...senderaccounts,balance:senderaccounts.balance-amount,})    
-    const receiverAmount=await accountModal.findOneAndUpdate({User_id:recevier._id},{...recevieraccounts,balance:recevieraccounts.balance+amount,})
+
+    await accountModal.updateOne({User_id:req.headers.userid},{$inc:{balance:-amount}}).session(session);
+    await accountModal.updateOne({User_id:to},{$inc:{balance:+amount}}).session(session);
+
+    session.commitTransaction();
+
     res.status(200).json({
-        "message":"transcation successfully",
-        "updateAmount":receiverAmount,
-    })
+        "message":"transerfered succesfully",
+    });   
 }
 catch(e){
+    res.status(500).json({
+        "message":"transfer error something went worng"
+    })
 
 }
 })
