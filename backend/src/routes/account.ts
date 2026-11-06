@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 
 export const AccoutRouter=Router();
 const transferShema=z.object({
-    'to':z.string().email(),
+    'to':z.string(),
     'amount':z.number(),
 })
 
