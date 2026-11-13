@@ -23,7 +23,7 @@ interface AuthformProps{
 
 const Authform = ({title,subtitle,shema,buttonTittle,onclick,bottomtext,redirect_Link}:AuthformProps) => {
   return (
-    <main className='flex flex-col gap-2 min-w-[350px] border border-2 p-3 pl-6 rounded-2xl shadow-xl '>
+    <main className='flex flex-col gap-2 min-w-[350px]  border-2 p-3 px-6 rounded-2xl shadow-xl '>
        
        <div>
         <Header label={title}/>

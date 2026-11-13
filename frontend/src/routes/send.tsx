@@ -1,8 +1,8 @@
-import React from 'react'
+import { SendMoney } from '../component/sendMoney'
 
 const Send = () => {
   return (
-    <div>Send</div>
+    <SendMoney/>
   )
 }
 

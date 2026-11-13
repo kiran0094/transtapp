@@ -1,8 +1,17 @@
-import React from 'react'
+import { Appbar } from '../component/Appbar'
+import { Balance } from '../component/balance'
+import { Users } from '../component/Users'
 
 const Dashboard = () => {
   return (
-    <div>Dashboad</div>
+    <>
+    <Appbar/>
+    <Balance value={5000}/>
+    <Users/>
+
+    
+
+    </>
   )
 }
 
