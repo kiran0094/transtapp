@@ -133,27 +133,35 @@ UserRouter.patch('/',usermiddleware,async(req,res)=>{
 
 })
 UserRouter.get('/bulk',async(req,res)=>{
-    const search=req.body.search;
-    const data=await UserModel.find(
-        {
-            $or:[{
-                firstName:{
-                    "$regex":search,
-                }
-            },{
-                lastName:{
-                    "$regex":search,
-                }
-            }]
-        }
-    )
-    res.send(200).json({
-        "message":"the data matched data",
-        user: data.map(user => ({
-            username: user.username,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            _id: user._id}))
-    })
+    try{
 
+        const search=req.body.search;
+        const data=await UserModel.find(
+            {
+                $or:[{
+                    firstName:{
+                        "$regex":search,
+                    }
+                },{
+                    lastName:{
+                        "$regex":search,
+                    }
+                }]
+            }
+        )
+        res.send(200).json({
+            "message":"the data matched data",
+            user: data.map(user => ({
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                _id: user._id}))
+            })
+            
+        }
+        catch(e){
+            res.json({
+                "error":e               
+            })
+        }
 })

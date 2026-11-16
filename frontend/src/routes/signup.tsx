@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import Authform from "../component/authform"
+import axios from "axios";
+import { useNavigate } from "react-router";
+
 
 interface schema
   {
@@ -10,15 +13,25 @@ interface schema
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;      
 }
 const Signup= () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
         username: '',
         password: '',
         firstname:'',
         lastname:'',
     });
-    const handleSubmit=(e:React.MouseEvent)=>{
+    
+    const handleSubmit=async(e:React.MouseEvent)=>{
       e.preventDefault();
-      console.log(formData);
+      const res= await axios.post("http://localhost:3000/api/v1/user/signup",{
+        username:formData.username,
+        password:formData.password,
+        firstName:formData.firstname,
+        lastName:formData.lastname,
+      })
+      if(res.status){
+        navigate("/signin")
+      }
     }
 
     const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {

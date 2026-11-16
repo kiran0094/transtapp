@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Authform from "../component/authform"
+import axios from "axios";
 
 interface schema
   {
@@ -14,9 +15,25 @@ const Signin = () => {
         username: '',
         password: '',
     });
-    const handleSubmit=(e:React.MouseEvent)=>{
+    const handleSubmit=async(e:React.MouseEvent)=>{
       e.preventDefault();
-      console.log(formData);
+      const res= await axios.post("http://localhost:3000/api/v1/user/signin",{
+        username:formData.username,
+        password:formData.password,
+      })
+      if(res.status!=200){
+        console.log("error with api")
+        return 
+      }
+      
+      const authString="Bearer "+res.data.token;
+      localStorage.setItem("authorization",authString);
+
+      console.log(localStorage.getItem("authorization"));
+      
+      
+    
+      
     }
 
     const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {

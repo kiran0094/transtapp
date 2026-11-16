@@ -1,5 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import  Button  from "./Button"
+import axios from "axios";
+import { Link } from "react-router";
 
 interface user{
     firstName: string,
@@ -8,6 +10,16 @@ interface user{
 }
 
 export const Users = () => {
+
+    useEffect(() => {
+    const fetchData = async () => {
+      const res = await axios.get("http://localhost:3000/api/v1/user/bulk")  
+
+      
+    }
+
+    fetchData()
+  }, [])
 
     
     const [users, setUsers] = useState<user[]>([{
@@ -45,7 +57,11 @@ function User({ user }: { user: user }) {
         </div>
 
         <div className="flex flex-col justify-center h-ful">
-             <Button>send Money</Button>
+             <Button>
+                <Link to={"/send"}>
+                send Money
+                </Link>
+                </Button>
         </div>
     </div>
 }
