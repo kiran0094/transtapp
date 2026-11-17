@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import  Button  from "./Button"
 import axios from "axios";
 import { Link } from "react-router";
+import { useDebounce } from "../hooks/useDebounce";
 
 interface user{
     firstName: string,
@@ -9,31 +10,37 @@ interface user{
     _id: number;
 }
 
-export const Users = () => {
+export const Users = () => { 
+     const [users, setUsers] = useState<user[]>([]);
+     const [Search, setSearch] = useState<string>("");
+     const debouncedSearch = useDebounce(Search, 1500);
 
     useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get("http://localhost:3000/api/v1/user/bulk")  
-
-      
+        
+      const res = await axios.get("http://localhost:3000/api/v1/user/bulk?filter="+debouncedSearch,
+        {
+        headers:{
+          authorization:localStorage.getItem("authorization")
+        }      
+      }
+      )  
+      if(res.status!=200){
+        console.log("error in featching users");
+        return;
+      }
+      setUsers(res.data.user);      
     }
-
     fetchData()
-  }, [])
 
-    
-    const [users, setUsers] = useState<user[]>([{
-        firstName: "Harkirat",
-        lastName: "Singh",
-        _id: 1
-    }]);
+     }, [debouncedSearch])
 
     return <>
         <div className="font-bold mt-6 text-lg">
             Users
         </div>
         <div className="my-2">
-            <input type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>
+            <input onChange={(e)=>setSearch(e.target.value)} type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>
         </div>
         <div>
             {users.map(user => <User key={user._id} user={user} />)}

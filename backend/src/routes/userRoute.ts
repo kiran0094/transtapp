@@ -132,10 +132,10 @@ UserRouter.patch('/',usermiddleware,async(req,res)=>{
 
 
 })
-UserRouter.get('/bulk',async(req,res)=>{
+UserRouter.get('/bulk',usermiddleware,async(req,res)=>{
     try{
 
-        const search=req.body.search;
+        const search=req.query.filter || "";
         const data=await UserModel.find(
             {
                 $or:[{
@@ -149,7 +149,7 @@ UserRouter.get('/bulk',async(req,res)=>{
                 }]
             }
         )
-        res.send(200).json({
+        res.status(200).json({
             "message":"the data matched data",
             user: data.map(user => ({
                 username: user.username,
