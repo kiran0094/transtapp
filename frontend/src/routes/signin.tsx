@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Authform from "../component/authform"
-import axios from "axios";
+import axios from "axios"
+import { useNavigate } from "react-router";
 
 interface schema
   {
@@ -11,6 +12,7 @@ interface schema
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;      
 }
 const Signin = () => {
+  const nav=useNavigate();
   const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -30,6 +32,8 @@ const Signin = () => {
       localStorage.setItem("authorization",authString);
 
       console.log(localStorage.getItem("authorization"));
+
+       nav("/");
       
       
     

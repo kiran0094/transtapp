@@ -3,7 +3,7 @@ interface BalanceProps{
 }
 
 export const Balance = ({ value }:BalanceProps) => {
-    return <div className="flex">
+    return <div className="flex m-4">
         <div className="font-bold text-lg">
             Your balance
         </div>

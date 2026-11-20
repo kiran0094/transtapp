@@ -13,7 +13,7 @@ interface user{
 export const Users = () => { 
      const [users, setUsers] = useState<user[]>([]);
      const [Search, setSearch] = useState<string>("");
-     const debouncedSearch = useDebounce(Search, 1500);
+     const debouncedSearch = useDebounce(Search, 500);
 
     useEffect(() => {
     const fetchData = async () => {
@@ -36,10 +36,10 @@ export const Users = () => {
      }, [debouncedSearch])
 
     return <>
-        <div className="font-bold mt-6 text-lg">
+        <div className="font-bold mt-6 text-lg m-4">
             Users
         </div>
-        <div className="my-2">
+        <div className="my-2 m-4">
             <input onChange={(e)=>setSearch(e.target.value)} type="text" placeholder="Search users..." className="w-full px-2 py-1 border rounded border-slate-200"></input>
         </div>
         <div>
@@ -49,7 +49,7 @@ export const Users = () => {
 }
 
 function User({ user }: { user: user }) {
-    return <div className="flex justify-between">
+    return <div className="flex justify-between m-4">
         <div className="flex">
             <div className="rounded-full h-12 w-12 bg-slate-200 flex justify-center mt-1 mr-2">
                 <div className="flex flex-col justify-center h-full text-xl">
@@ -64,8 +64,8 @@ function User({ user }: { user: user }) {
         </div>
 
         <div className="flex flex-col justify-center h-ful">
-             <Button>
-                <Link to={"/send"}>
+             <Button className="px-4">
+                <Link to={"/send?id="+user._id+"&name="+user.firstName}>
                 send Money
                 </Link>
                 </Button>
